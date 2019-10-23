@@ -53,16 +53,39 @@ def load_training_labels(file_path: str):
     return np.array(df['Label'])
 
 
-def show_image(image: np.ndarray, title: str = "", grayscale: bool = True):
+def show_images(images: list, titles=None):
+    """
+    Shows multiple images, prints them on the same plot in a line
+    :param images: Images to be printed
+    :param titles: Titles of all images
+    """
+    if titles is None:
+        titles = []
+    if len(images) == 0:
+        raise Exception("You must input at least one image")
+    if 0 < len(titles) != len(images):
+        raise Exception("The number of images does not match the number of titles")
+    if len(titles) == 0:
+        titles = ["" for i in range(len(images))]
+
+    _, axs = plt.subplots(nrows=1, ncols=len(images), figsize=(12, 12))
+    axs = axs.flatten()
+    for img, title, ax in zip(images, titles, axs):
+        ax.title.set_text(title)
+        ax.imshow(img, cmap=plt.get_cmap('gray'))
+
+
+def show_image(image: np.ndarray, title: str = ""):
     """
     Shows an image represented as a np array
     :param image: numpy array representing image
     :param title: Title of image to be displayed
-    :param grayscale: True if the image is grayscale
     """
     plt.title(title)
-    if grayscale:
+    if len(image.shape) == 2:
         plt.imshow(image, cmap=plt.get_cmap('gray'))
-    else:
+    elif len(image.shape) == 3:
         plt.imshow(image)
+    else:
+        raise Exception("You cannot print an image with shape", image.shape)
     plt.show()

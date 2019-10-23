@@ -9,6 +9,11 @@ from src.util.fileio import load_pkl_file, save_ndarray
 
 
 def extract_numbers():
+    """
+    This method loads both the training and testing dataset, extracts three numbers out of each image to get a numpy array of size
+    (Number of samples, 3, MNIST_WIDTH, MNIST_WIDTH)
+    :return: Array containing only the images of the extracted numbers from each image
+    """
     training_images_file_path = os.path.join(data_path, training_images_file)
     testing_images_file_path = os.path.join(data_path, testing_images_file)
     if not os.path.isfile(training_images_file_path):
@@ -31,7 +36,7 @@ def extract_numbers():
         if i % int(N / 5) == 0:
             print("\t\tCompleted extraction of ", i, " images")
 
-            images_extracted[i] = extract_k_numbers(images[i], k=NUMBERS_PER_PICTURE, show_images=False)
+            images_extracted[i] = extract_k_numbers(images[i], k=NUMBERS_PER_PICTURE, show_imgs=False)
 
     print("\tTraining data number extraction complete, saving data...")
 
@@ -50,7 +55,7 @@ def extract_numbers():
         if i % int(N / 5) == 0:
             print("\t\tCompleted extraction of ", i, " images")
 
-            images_extracted[i] = extract_k_numbers(images[i], k=NUMBERS_PER_PICTURE, show_images=False)
+            images_extracted[i] = extract_k_numbers(images[i], k=NUMBERS_PER_PICTURE, show_imgs=False)
 
     print("\tTraining data number extraction complete, saving data...")
 

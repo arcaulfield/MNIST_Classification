@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 from src.config import MNIST_PIXEL
-from src.util.fileio import show_image
+from src.util.fileio import show_images
 
 
 class Rectangle:
@@ -91,17 +91,17 @@ def __extract_rectangle(img: np.ndarray, rectangle: Rectangle):
     return canvas
 
 
-def extract_k_numbers(img: np.ndarray, k: int = 3, show_images: bool = True):
+def extract_k_numbers(img: np.ndarray, k: int = 3, show_imgs: bool = True):
     """
     Extracts k numbers present in the image
     :param img: Image to extract numbers from
     :param k: Number of numbers to be extracted from the image
-    :param show_images: If true, debug images will be shown to the user
+    :param show_imgs: If true, debug images will be shown to the user
     :return: (k, 28, 28) np array of k numbers extracted from the picture
     """
 
-    if show_images:
-        show_image(img, "Original image")
+    images_to_show = [img]
+    images_titles = ["Original image"]
 
     # Get the to_zero thresholded image used to crop the numbers out
     img_TOZERO = cv2.threshold(img, 230, 255, cv2.THRESH_TOZERO)[1]
@@ -109,14 +109,14 @@ def extract_k_numbers(img: np.ndarray, k: int = 3, show_images: bool = True):
     # First threshold the image such that the numbers are all 255 and rest is 0
     img_BINARY = cv2.threshold(img, 230, 255, cv2.THRESH_BINARY)[1]
 
-    if show_images:
-        show_image(img_BINARY, "Thresholded image")
+    images_to_show.append(img_BINARY)
+    images_titles.append("Thresholded image")
 
     # Dilate slightly for disconnected components to get together
     img_DIALATE = cv2.dilate(img_BINARY, np.ones((3, 3), np.uint8), iterations=1)
 
-    if show_images:
-        show_image(img_DIALATE, "Dilated image")
+    images_to_show.append(img_DIALATE)
+    images_titles.append("Dilated image")
 
     # Get all the contours (https://docs.opencv.org/2.4/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html)
     # We only want extreme contours and the contours encoded as a few points
@@ -153,9 +153,14 @@ def extract_k_numbers(img: np.ndarray, k: int = 3, show_images: bool = True):
 
         extracted_images[i] = __extract_rectangle(img_TOZERO, largest_rect)
 
-    if show_images:
-        show_image(img_color, title="Rectangles found", grayscale=False)
+    images_to_show.append(img_color)
+    images_titles.append("Numbers extracted")
+
+    if show_imgs:
+        show_images(images_to_show, images_titles)
+        images_to_show = []
         for i in range(k):
-            show_image(extracted_images[i], title="Found")
+            images_to_show.append(extracted_images[i])
+        show_images(images_to_show)
 
     return extracted_images
