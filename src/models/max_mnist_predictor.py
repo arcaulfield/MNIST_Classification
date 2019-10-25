@@ -14,7 +14,7 @@ class MaxMNISTPredictor:
         """
         predicted_y = np.empty(x.shape(0))
         for i in range(3):
-            y = self.model.predict(x[:, i])
+            y = np.argmax(self.model.predict(x[:, i]), axis=1)
             np.append(predicted_y, y, axis=1)
         predicted_y = np.amax(predicted_y, axis=1)
         return predicted_y
