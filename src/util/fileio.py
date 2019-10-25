@@ -2,6 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from keras.models import Model
 
 
 def load_pkl_file(pkl_file_path: str):
@@ -89,3 +90,25 @@ def show_image(image: np.ndarray, title: str = ""):
     else:
         raise Exception("You cannot print an image with shape", image.shape)
     plt.show()
+
+
+def save_model_weights(model_path: str, model: Model):
+    """
+    Saves the keras model weights to a file
+    :param model_path: File path to save to
+    :param model: The keras model
+    """
+    if not os.path.isdir(os.path.dirname(model_path)):
+        raise Exception("The directory", os.path.dirname(model_path), "in which you want to save your model weights does not exist")
+    model.save_weights(model_path)
+
+
+def load_model(model_path: str, model: Model):
+    """
+    Loads the keras model weights from file to the model
+    :param model_path: File path of keras model
+    :param model: Model to load weights to
+    """
+    if not os.path.isfile(model_path):
+        raise Exception("The file", model_path, "from which you are trying to load your model weights does not exist")
+    return model.load_weights(model_path)
