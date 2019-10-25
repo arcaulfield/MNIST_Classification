@@ -1,4 +1,4 @@
-# This scripts will either load the models or retrain them
+# This script will evaluate all simple MNIST models specified in the config file as well as the dataset to run them against
 import os
 import numpy as np
 from keras.models import Model
@@ -6,11 +6,11 @@ from sklearn.metrics import confusion_matrix, accuracy_score
 
 from src.data_processing.MNIST import get_MNIST
 from src.models.mnist_predictor import get_model
-from src.config import retrain_models, models_path, results_path
-from src.util.fileio import load_model, save_model_weights, plot_training_history, save_training_history, plot_confusion_matrix, save_confusion_matrix
+from src.config import retrain_models, models_path, results_path, MNIST_model_names, MNIST_datasets
+from src.util.fileio import load_model, save_model_weights, plot_training_history, save_training_history, plot_confusion_matrix, save_confusion_matrix, dictionary_to_json
 
 
-def evaluate_MNIST_model(model_str: str, dataset: str, generate_results = True, show_graphs: bool = False):
+def evaluate_MNIST_model(model_str: str, dataset: str, generate_results: bool = True, show_graphs: bool = False):
     """
     Evaluate the input model for the accuracy metric
     The results such as the confusion matrix will be saved to the results folder
@@ -26,6 +26,7 @@ def evaluate_MNIST_model(model_str: str, dataset: str, generate_results = True, 
             model = get_model(model_str)
             model_path = os.path.join(models_path, model_str + "_" + dataset + ".h5")
             load_model(model_path, model)
+            model.summary()
         except:
             print("\tThe model file cannot be found at " + model_path + " so it will be retrained.")
             model = train_model(model_str, dataset)
@@ -47,7 +48,7 @@ def evaluate_MNIST_model(model_str: str, dataset: str, generate_results = True, 
         plot_confusion_matrix(confusion_matrix(y_test, y_pred), list(map(lambda x: str(x), range(10))), title="Confusion matrix of " + model_str + " with dataset " + dataset)
 
 
-def train_model(model_str: str, dataset: str, generate_results = True, show_graphs: bool = False):
+def train_model(model_str: str, dataset: str, generate_results: bool = True, show_graphs: bool = False):
     """
     Train the model, generate graphs of training and validation error and loss per epoch
     :param model_str: String code for the model to evaluate (CNN, RNN)
@@ -62,13 +63,17 @@ def train_model(model_str: str, dataset: str, generate_results = True, show_grap
     (x_train, y_train), (x_test, y_test) = get_MNIST(dataset)
 
     # Keep track of the validation and training accuracies as well as loss
-    history = {'acc': [], 'val_acc': [], 'loss': [], 'val_loss': []}
+    history = {'model': model_str, 'dataset': dataset, 'acc': [], 'val_acc': [], 'loss': [], 'val_loss': []}
 
     model: Model = get_model(model_str)
+    model.summary()
     model_path = os.path.join(models_path, model_str + "_" + dataset + ".h5")
 
     best_accuracy = 0.
-    for i in range(11):
+    for i in range(10):
+
+        # Perform one epoch
+        model.fit(x=x_train, y=y_train, epochs=1, verbose=0)
 
         # Evaluate the model
         results = model.evaluate(x_train, y_train, verbose=0)
@@ -76,21 +81,18 @@ def train_model(model_str: str, dataset: str, generate_results = True, show_grap
         history['loss'].append(results[0])
         history['acc'].append(results[1])
 
-        print("\t\tEpoch " + str(i) + "/10: training accuracy=" + str(results[1]), ", training loss=" + str(results[0]))
+        print("\t\tEpoch " + str(i+1) + "/10: training accuracy=" + str(results[1]), ", training loss=" + str(results[0]))
 
         results = model.evaluate(x_test, y_test, verbose=0)
 
         history['val_loss'].append(results[0])
         history['val_acc'].append(results[1])
 
-        print("\t\tEpoch " + str(i) + "/10: validation accuracy=" + str(results[1]), ", validation loss=" + str(results[0]))
+        print("\t\tEpoch " + str(i+1) + "/10: validation accuracy=" + str(results[1]), ", validation loss=" + str(results[0]))
 
         if best_accuracy < results[1]:
             save_model_weights(model_path, model)
             best_accuracy = results[1]
-
-        # Perform one epoch
-        model.fit(x=x_train, y=y_train, epochs=1, verbose=0)
 
     # Plot the training history if requested
     if show_graphs:
@@ -99,6 +101,8 @@ def train_model(model_str: str, dataset: str, generate_results = True, show_grap
         acc_img_path = os.path.join(results_path, model_str + "_" + dataset + "_acc.png")
         loss_img_path = os.path.join(results_path, model_str + "_" + dataset + "_loss.png")
         save_training_history(history, acc_img_path, loss_img_path)
+        results_file_path = os.path.join(results_path, model_str + "_" + dataset + "_results.json")
+        dictionary_to_json(results_file_path, history)
 
     load_model(model_path, model)
 
@@ -106,4 +110,7 @@ def train_model(model_str: str, dataset: str, generate_results = True, show_grap
 
 
 if __name__ == '__main__':
-    evaluate_MNIST_model("CNN", "MNIST", show_graphs=True)
+    print("\nEvaluating models for the simple MNIST problem")
+    for dataset in MNIST_datasets:
+        for model_str in MNIST_model_names:
+            evaluate_MNIST_model(model_str, dataset, show_graphs=False, generate_results=True)

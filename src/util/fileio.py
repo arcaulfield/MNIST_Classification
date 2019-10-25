@@ -1,4 +1,5 @@
 import os
+import json
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -97,6 +98,7 @@ def plot_training_history(history: dict):
     Plot the validation and training accuracy/loss
     :param history: keras model history
     """
+    plt.figure(3)
     plt.plot(history['acc'])
     plt.plot(history['val_acc'])
     plt.title('Model accuracy')
@@ -106,6 +108,7 @@ def plot_training_history(history: dict):
     plt.show()
 
     # Plot training & validation loss values
+    plt.figure(4)
     plt.plot(history['loss'])
     plt.plot(history['val_loss'])
     plt.title('Model loss')
@@ -122,6 +125,7 @@ def save_training_history(history: dict, acc_img_path: str, loss_img_path: str):
     :param acc_img_path: File path to save accuracy image
     :param loss_img_path: File path to save loss image
     """
+    plt.figure(1)
     plt.plot(history['acc'])
     plt.plot(history['val_acc'])
     plt.title('Model accuracy')
@@ -129,9 +133,9 @@ def save_training_history(history: dict, acc_img_path: str, loss_img_path: str):
     plt.xlabel('Epoch')
     plt.legend(['Train', 'Test'], loc='upper left')
     plt.savefig(acc_img_path)
-    plt.close()
 
     # Plot training & validation loss values
+    plt.figure(2)
     plt.plot(history['loss'])
     plt.plot(history['val_loss'])
     plt.title('Model loss')
@@ -244,7 +248,7 @@ def save_confusion_matrix(cm: np.ndarray, classes,
                     ha="center", va="center",
                     color="white" if cm[i, j] > thresh else "black")
     fig.tight_layout()
-    plt.savefig(fig_file_path)
+    fig.savefig(fig_file_path)
 
 
 def save_model_weights(model_path: str, model: Model):
@@ -267,3 +271,16 @@ def load_model(model_path: str, model: Model):
     if not os.path.isfile(model_path):
         raise Exception("The file", model_path, "from which you are trying to load your model weights does not exist")
     return model.load_weights(model_path)
+
+
+def dictionary_to_json(json_file_path: str, dictionary: dict):
+    """
+    Dump the dictionary in a json file
+    :param json_file_path: Path of the JSON file to save to
+    :param dictionary: Dictionary to save
+    """
+    if not os.path.join(os.path.dirname(json_file_path)):
+        raise Exception("The directory " + os.path.dirname(json_file_path), " you are trying to save your JSON results to does not exist")
+
+    with open(json_file_path, 'w') as fp:
+        json.dump(dictionary, fp, indent=4)
