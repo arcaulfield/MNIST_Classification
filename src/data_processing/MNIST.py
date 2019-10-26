@@ -1,6 +1,8 @@
-import cv2
+import numpy as np
 from keras.datasets.mnist import load_data as load_MNIST
 from keras.preprocessing.image import ImageDataGenerator
+
+from src.data_processing.number_extraction import extract_k_numbers
 
 
 def get_MNIST(dataset_name: str):
@@ -38,14 +40,18 @@ def get_processed_MNIST():
     """
     (x_train, y_train), (x_test, y_test) = load_MNIST()
 
-    # Iterate through each example and apply the same threshold applied to the number extraction
+    # Iterate through each example, brighten the image by a random amount and apply the same processing as the extracted images
     for i in range(x_train.shape[0]):
-        x_train[i] = cv2.threshold(x_train[i], 220, 255, cv2.THRESH_TOZERO)[1]
+        brightness_increase = np.random.randint(70, 85)
+        x_train[i] = np.where((255 - x_train[i]) < brightness_increase, 255, x_train[i] + brightness_increase)
+        x_train[i] = extract_k_numbers(x_train[i], k=1)[0]
 
     for i in range(x_test.shape[0]):
-        x_test[i] = cv2.threshold(x_test[i], 220, 255, cv2.THRESH_TOZERO)[1]
+        brightness_increase = np.random.randint(70, 85)
+        x_train[i] = np.where((255 - x_train[i]) < brightness_increase, 255, x_train[i] + brightness_increase)
+        x_train[i] = extract_k_numbers(x_train[i], k=1)[0]
 
-    datagen = ImageDataGenerator(rotation_range=40, zoom_range=0.1)
+    datagen = ImageDataGenerator(rotation_range=45, zoom_range=0.15, horizontal_flip=False, vertical_flip=False)
 
     x_train = prepare_for_model_training(x_train)
     x_test = prepare_for_model_training(x_test)
