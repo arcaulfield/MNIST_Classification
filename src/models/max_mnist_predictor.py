@@ -2,6 +2,7 @@ from keras.models import Model
 import numpy as np
 from src.data_processing.number_extraction import extract_k_numbers
 
+
 class MaxMNISTPredictor:
     def __init__(self, model: Model):
         self.model = model
