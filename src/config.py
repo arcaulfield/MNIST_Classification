@@ -20,6 +20,8 @@ MNIST_model_names = ["CNN"]
 MNIST_datasets = ["MNIST", "PROC_MNIST"]
 # If true, the models are retrained from scratch and the best models are saved to file
 retrain_models = True
+# if true, will keep track of all mispredicted images and show those extracted images and their prediction.
+report_mispreditions = True
 
 
 MNIST_PIXEL = 28

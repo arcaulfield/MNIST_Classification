@@ -78,15 +78,15 @@ def train_model(model_str: str, dataset: str, generate_results: bool = True, sho
         # Evaluate the model
         results = model.evaluate(x_train, y_train, verbose=0)
 
-        history['loss'].append(results[0])
-        history['acc'].append(results[1])
+        history['loss'].append(str(results[0]))
+        history['acc'].append(str(results[1]))
 
         print("\t\tEpoch " + str(i+1) + "/10: training accuracy=" + str(results[1]), ", training loss=" + str(results[0]))
 
         results = model.evaluate(x_test, y_test, verbose=0)
 
-        history['val_loss'].append(results[0])
-        history['val_acc'].append(results[1])
+        history['val_loss'].append(str(results[0]))
+        history['val_acc'].append(str(results[1]))
 
         print("\t\tEpoch " + str(i+1) + "/10: validation accuracy=" + str(results[1]), ", validation loss=" + str(results[0]))
 
