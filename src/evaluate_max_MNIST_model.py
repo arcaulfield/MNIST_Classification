@@ -1,27 +1,24 @@
 import os
-import numpy as np
-from keras.models import Model
 from sklearn.metrics import confusion_matrix, accuracy_score
 
-from src.data_processing.MNIST import get_MNIST
 from src.models.mnist_predictor import get_model
-from src.config import retrain_models, models_path, results_path, MNIST_model_names, MNIST_datasets, training_images_file, training_labels_file_name, data_path
-from src.util.fileio import load_model, save_model_weights, plot_training_history, save_training_history, \
-    plot_confusion_matrix, save_confusion_matrix, dictionary_to_json
+from src.config import models_path, results_path, MNIST_model_names, MNIST_datasets, training_images_file, training_labels_file_name, data_path
+from src.util.fileio import load_model, plot_confusion_matrix, save_confusion_matrix, dictionary_to_json
 from src.evaluate_MNIST_models import train_model
 from src.models.max_mnist_predictor import MaxMNISTPredictor
 from src.util.fileio import load_pkl_file, load_training_labels
 
+
 def evaluate_max_mnist_model(model_str: str, dataset: str, generate_results: bool = True, show_graphs: bool = False):
     """
-        Evaluate the input model for the accuracy metric
-        The results such as the confusion matrix will be saved to the results folder
-        :param model_str: String code for the model to evaluate (CNN, RNN)
-        :param dataset: String code for which dataset to train on (MNIST, PROC_MNIST)
-        :param generate_results: If true, the results of the training are saved in the results folder
-        :param show_graphs: If true, the graphs are shown to the user
-        """
-    print("\nEvaluating model " + model_str + " with dataset " + dataset)
+    Evaluate the meta model MAX_MNIST
+    The results such as the confusion matrix will be saved to the results folder
+    :param model_str: String code for the model to evaluate (CNN, RNN)
+    :param dataset: String code for which dataset to train on (MNIST, PROC_MNIST)
+    :param generate_results: If true, the results of the training are saved in the results folder
+    :param show_graphs: If true, the graphs are shown to the user
+    """
+    print("\nEvaluating MAX MNIST meta model " + model_str + " with dataset " + dataset)
 
     try:
         model = get_model(model_str)
@@ -40,19 +37,25 @@ def evaluate_max_mnist_model(model_str: str, dataset: str, generate_results: boo
     max_predictor = MaxMNISTPredictor(model)
     y_pred = max_predictor.predict_max_num(x_test)
 
-    print("\nValidation accuracy:", accuracy_score(y_test, y_pred))
-
     if generate_results:
-        conf_mat_file_path = os.path.join(results_path, model_str + "_" + dataset + "_confusion.png")
+        conf_mat_file_path = os.path.join(results_path, "MAX_MNIST_" +  model_str + "_" + dataset + "_confusion.png")
         save_confusion_matrix(confusion_matrix(y_test, y_pred), list(map(lambda x: str(x), range(10))),
-                              conf_mat_file_path, title="Confusion matrix of " + model_str + " with dataset " + dataset)
+                              conf_mat_file_path, title="MAX MNIST Confusion matrix with inner model " + model_str + " trained on dataset " + dataset)
     if show_graphs:
         plot_confusion_matrix(confusion_matrix(y_test, y_pred), list(map(lambda x: str(x), range(10))),
-                              title="Confusion matrix of " + model_str + " with dataset " + dataset)
+                              title="MAX MNIST Confusion matrix with inner model " + model_str + " trained on dataset " + dataset)
+
+    acc = accuracy_score(y_test, y_pred)
+    print("\nValidation accuracy:", acc)
+
+    return acc
 
 
 if __name__ == '__main__':
-    print("\nEvaluating models for the simple MNIST problem")
+    print("\nEvaluating models for the MAX MNIST problem")
+    results = {}
     for dataset in MNIST_datasets:
         for model_str in MNIST_model_names:
-            evaluate_max_mnist_model(model_str, dataset, show_graphs=False, generate_results=True)
+            results['MAX_MNIST_' + model_str + "_" + dataset] = evaluate_max_mnist_model(model_str, dataset, show_graphs=False, generate_results=True)
+    result_file_path = os.path.join(results_path, "MAX_MNIST_results.json")
+    dictionary_to_json(result_file_path, results)
