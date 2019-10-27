@@ -13,7 +13,13 @@ def generate_kaggle_results():
 
     # Train model
     print("\tTraining model: " + kaggle_model + " with dataset: " + kaggle_dataset)
-    model = train_model(kaggle_model, kaggle_dataset)
+    try:
+        model = get_model(kaggle_model)
+        model_path = os.path.join(models_path, kaggle_model + "_" + kaggle_dataset + ".h5")
+        load_model(model_path, model)
+    except:
+        print("\tThe model file cannot be found at " + model_path + " so it will be retrained.")
+        model = train_model(kaggle_model, kaggle_dataset)
 
     # Load the test data
     print("\tLoading test data...")
