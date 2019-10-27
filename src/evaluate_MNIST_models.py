@@ -8,6 +8,7 @@ from src.data_processing.MNIST import get_MNIST
 from src.models.mnist_predictor import get_model
 from src.config import retrain_models, models_path, results_path, MNIST_model_names, MNIST_datasets
 from src.util.fileio import load_model, save_model_weights, plot_training_history, save_training_history, plot_confusion_matrix, save_confusion_matrix, dictionary_to_json
+from keras.utils import to_categorical
 
 
 def evaluate_MNIST_model(model_str: str, dataset: str, generate_results: bool = True, show_graphs: bool = False):
@@ -61,6 +62,10 @@ def train_model(model_str: str, dataset: str, generate_results: bool = True, sho
     print("\tTraining model " + model_str + " with dataset " + dataset)
 
     (x_train, y_train), (x_test, y_test) = get_MNIST(dataset)
+
+    # Make the data categorical
+    y_train = to_categorical(y_train, 10)
+    y_test = to_categorical(y_test, 10)
 
     # Keep track of the validation and training accuracies as well as loss
     history = {'model': model_str, 'dataset': dataset, 'acc': [], 'val_acc': [], 'loss': [], 'val_loss': []}
