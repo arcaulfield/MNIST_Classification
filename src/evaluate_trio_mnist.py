@@ -1,7 +1,6 @@
 import os
 import numpy as np
 from sklearn.metrics import confusion_matrix, accuracy_score
-from sklearn.model_selection import train_test_split
 from keras.utils import to_categorical
 from keras.models import Model
 
@@ -44,8 +43,12 @@ def evaluate_trio_MNIST_model(model_str: str, generate_results: bool = True, sho
 
     X_trio = prepare_for_model_training(X_trio)
 
+    split = int(X_trio.shape[0] * 0.8)
     # Split into training ad testing set
-    X_train, X_test, y_train, y_test = train_test_split(X_trio, Y_trio, test_size=0.20, random_state=1)
+    X_train = X_trio[:split]
+    y_train = Y_trio[:split]
+    X_test = X_trio[split:]
+    y_test = Y_trio[split:]
 
     del X_trio
     del Y_trio
@@ -112,14 +115,14 @@ def train_model(model_str: str, x_train, y_train, x_test, y_test, generate_resul
         history['loss'].append(results[0])
         history['acc'].append(results[1])
 
-        print("\t\tEpoch " + str(i+1) + "/10: training accuracy=" + str(results[1]), ", training loss=" + str(results[0]))
+        print("\t\tEpoch " + str(i+1) + "/50: training accuracy=" + str(results[1]), ", training loss=" + str(results[0]))
 
         results = model.evaluate(x_test, y_test, verbose=0)
 
         history['val_loss'].append(results[0])
         history['val_acc'].append(results[1])
 
-        print("\t\tEpoch " + str(i+1) + "/10: validation accuracy=" + str(results[1]), ", validation loss=" + str(results[0]))
+        print("\t\tEpoch " + str(i+1) + "/50: validation accuracy=" + str(results[1]), ", validation loss=" + str(results[0]))
 
         if best_accuracy < results[1]:
             save_model_weights(model_path, model)
@@ -140,6 +143,10 @@ def train_model(model_str: str, x_train, y_train, x_test, y_test, generate_resul
     return model
 
 
-if __name__ == '__main__':
+def evaluate_all_trio_MNIST_model():
     for model_str in MNIST_model_names:
         evaluate_trio_MNIST_model(model_str)
+
+
+if __name__ == '__main__':
+    evaluate_all_trio_MNIST_model()

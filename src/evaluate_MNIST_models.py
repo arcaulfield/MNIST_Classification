@@ -75,7 +75,7 @@ def train_model(model_str: str, dataset: str, generate_results: bool = True, sho
     model_path = os.path.join(models_path, model_str + "_" + dataset + ".h5")
 
     best_accuracy = 0.
-    for i in range(10):
+    for i in range(50):
 
         # Perform one epoch
         model.fit(x=x_train, y=y_train, epochs=1, verbose=0)
@@ -86,14 +86,14 @@ def train_model(model_str: str, dataset: str, generate_results: bool = True, sho
         history['loss'].append(results[0])
         history['acc'].append(results[1])
 
-        print("\t\tEpoch " + str(i+1) + "/10: training accuracy=" + str(results[1]), ", training loss=" + str(results[0]))
+        print("\t\tEpoch " + str(i+1) + "/50: training accuracy=" + str(results[1]), ", training loss=" + str(results[0]))
 
         results = model.evaluate(x_test, y_test, verbose=0)
 
         history['val_loss'].append(results[0])
         history['val_acc'].append(results[1])
 
-        print("\t\tEpoch " + str(i+1) + "/10: validation accuracy=" + str(results[1]), ", validation loss=" + str(results[0]))
+        print("\t\tEpoch " + str(i+1) + "/50: validation accuracy=" + str(results[1]), ", validation loss=" + str(results[0]))
 
         if best_accuracy < results[1]:
             save_model_weights(model_path, model)
@@ -114,8 +114,12 @@ def train_model(model_str: str, dataset: str, generate_results: bool = True, sho
     return model
 
 
-if __name__ == '__main__':
+def evaluate_all_MNIST_models():
     print("\nEvaluating models for the simple MNIST problem")
     for dataset in MNIST_datasets:
         for model_str in MNIST_model_names:
             evaluate_MNIST_model(model_str, dataset, show_graphs=False, generate_results=True)
+
+
+if __name__ == '__main__':
+    evaluate_all_MNIST_models()
