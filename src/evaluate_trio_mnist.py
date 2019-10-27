@@ -29,9 +29,6 @@ def evaluate_trio_MNIST_model(model_str: str, generate_results: bool = True, sho
     X = load_pkl_file(training_images_file_path)
     Y = load_training_labels(training_labels_file_path)
 
-    X = X[:100]
-    Y = Y[:100]
-
     X_trio = np.empty((X.shape[0] * 6, MNIST_PIXEL, NUMBERS_PER_PICTURE * MNIST_PIXEL))
     Y_trio = np.empty(Y.shape[0] * 6).astype(int)
 
@@ -104,7 +101,7 @@ def train_model(model_str: str, x_train, y_train, x_test, y_test, generate_resul
     model_path = os.path.join(models_path, model_str + "_TRIO.h5")
 
     best_accuracy = 0.
-    for i in range(10):
+    for i in range(50):
 
         # Perform one epoch
         model.fit(x=x_train, y=y_train, epochs=1, verbose=0)
