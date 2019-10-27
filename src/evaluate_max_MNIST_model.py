@@ -1,8 +1,10 @@
 import os
+import pandas as pd
 from sklearn.metrics import confusion_matrix, accuracy_score
 
 from src.models.mnist_predictor import get_model
-from src.config import models_path, results_path, MNIST_model_names, MNIST_datasets, training_images_file, training_labels_file_name, data_path
+from src.config import models_path, results_path, MNIST_model_names, MNIST_datasets, training_images_file, \
+    training_labels_file_name, data_path, report_mispreditions
 from src.util.fileio import load_model, plot_confusion_matrix, save_confusion_matrix, dictionary_to_json
 from src.evaluate_MNIST_models import train_model
 from src.models.max_mnist_predictor import MaxMNISTPredictor
@@ -44,6 +46,13 @@ def evaluate_max_mnist_model(model_str: str, dataset: str, generate_results: boo
     if show_graphs:
         plot_confusion_matrix(confusion_matrix(y_test, y_pred), list(map(lambda x: str(x), range(10))),
                               title="MAX MNIST Confusion matrix with inner model " + model_str + " trained on dataset " + dataset)
+    if report_mispreditions:
+        df = pd.DataFrame()
+        df["actual"] = y_test
+        df["predicted"] = y_pred
+        incorrect = df[df["actual"] != df["predicted"]]
+        print(incorrect)
+        # TODO: figure out what to do with the incorrect values
 
     acc = accuracy_score(y_test, y_pred)
     print("\nValidation accuracy:", acc)
