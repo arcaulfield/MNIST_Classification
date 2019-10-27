@@ -6,9 +6,8 @@ from src.data_processing.number_extraction import extract_k_numbers
 import os
 import numpy as np
 from keras.models import Sequential
-from keras.layers import Dense, Conv2D, Dropout, Flatten, MaxPooling2D
-import tensorflow as tf
-
+from keras.layers import Dense, Conv2D, Dropout, Flatten, MaxPool2D, BatchNormalization
+import keras
 from src.config import MNIST_PIXEL
 
 if __name__ == '__main__':
@@ -31,22 +30,34 @@ if __name__ == '__main__':
         X[i*6+5] = np.hstack((three_num[2], three_num[1], three_num[0]))
 
     X = prepare_for_model_training(X)
+    Y = keras.utils.to_categorical(Y, 10)
 
     model = Sequential()
-    model.add(Conv2D(28, kernel_size=(3, 3), input_shape=(MNIST_PIXEL, 3 * MNIST_PIXEL, 1)))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Flatten())  # Flattening the 2D arrays for fully connected layers
-    model.add(Dense(128, activation=tf.nn.relu))
-    model.add(Dropout(0.2))
-    model.add(Dense(10, activation=tf.nn.softmax))
-    model.compile(optimizer='adam',
-                  loss='sparse_categorical_crossentropy',
+    model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', kernel_initializer='he_normal',
+                     input_shape=(MNIST_PIXEL, 3 * MNIST_PIXEL, 1)))
+    model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', kernel_initializer='he_normal'))
+    model.add(MaxPool2D((2, 2)))
+    model.add(Dropout(0.20))
+    model.add(Conv2D(64, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal'))
+    model.add(Conv2D(64, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal'))
+    model.add(MaxPool2D(pool_size=(2, 2)))
+    model.add(Dropout(0.25))
+    model.add(Conv2D(128, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal'))
+    model.add(Dropout(0.25))
+    model.add(Flatten())
+    model.add(Dense(128, activation='relu'))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.25))
+    model.add(Dense(10, activation='softmax'))
+
+    model.compile(loss=keras.losses.categorical_crossentropy,
+                  optimizer=keras.optimizers.RMSprop(),
                   metrics=['accuracy'])
 
     for i in range(10):
         print("Epoch", i)
 
-        model.fit(X[0:40000 * 6], Y[0:40000 * 6], epochs=1, verbose=0)
+        model.fit(X[0:40000 * 6], Y[0:40000 * 6], epochs=1, verbose=1)
 
         results = model.evaluate(X[0:40000 * 6], Y[0:40000 * 6], verbose=0)
 
