@@ -7,20 +7,19 @@ from keras.models import Model
 from src.models.mnist_predictor import get_model
 from src.data_processing.number_extraction import extract_3_and_paste
 from src.data_processing.MNIST import prepare_for_model_training
-from src.config import NUM_CATEGORIES, NUMBERS_PER_PICTURE, MNIST_PIXEL, retrain_models, data_path, models_path, MNIST_model_names, results_path, training_images_file, training_labels_file_name
+from src.config import NUM_CATEGORIES, NUMBERS_PER_PICTURE, MNIST_PIXEL, retrain_models, data_path, models_path, MNIST_model_names, results_path, training_images_file, training_labels_file_name, REMOVE_BACKGROUND_TRIO
 from src.util.fileio import load_model, load_pkl_file, load_training_labels, save_model_weights, plot_training_history, save_training_history, plot_confusion_matrix, save_confusion_matrix, dictionary_to_json
 
 
-def evaluate_trio_MNIST_model(model_str: str, generate_results: bool = True, show_graphs: bool = False, threshold: bool = True):
+def evaluate_trio_MNIST_model(model_str: str, generate_results: bool = True, show_graphs: bool = False):
     """
     Evaluate a model predicting on all three extracted numbers at once
     :param model_str: Name of model to use
     :param generate_results: Generate results such as confusion matrix if True
     :param show_graphs: If true show the graphs
-    :param threshold: If true, remove background from images
     """
     print("\nEvaluating model " + model_str + " on the TRIO dataset")
-    print("\nRemove background: " + str(threshold))
+    print("\nRemove background: " + str(REMOVE_BACKGROUND_TRIO))
 
     # Get the file paths of the training data
     training_images_file_path = os.path.join(data_path, training_images_file)
@@ -36,7 +35,7 @@ def evaluate_trio_MNIST_model(model_str: str, generate_results: bool = True, sho
     # Extract the numbers from each image
     for i in range(X.shape[0]):
         Y_trio[i * 6:i * 6 + 6] = Y[i]
-        x_extracted = extract_3_and_paste(X[i], threshold=threshold)
+        x_extracted = extract_3_and_paste(X[i], threshold=REMOVE_BACKGROUND_TRIO)
         for j in range(6):
             X_trio[i * 6 + j] = x_extracted[j]
 
@@ -59,7 +58,7 @@ def evaluate_trio_MNIST_model(model_str: str, generate_results: bool = True, sho
     if not retrain_models:
         try:
             model = get_model(model_str)
-            model_path = os.path.join(models_path, model_str + "_TRIO.h5")
+            model_path = os.path.join(models_path, model_str + "_TRIO" + "" if not REMOVE_BACKGROUND_TRIO else "_NoBackground" + ".h5")
             load_model(model_path, model)
             model.summary()
         except:
@@ -74,12 +73,12 @@ def evaluate_trio_MNIST_model(model_str: str, generate_results: bool = True, sho
     print("\nValidation accuracy:", accuracy_score(y_test, y_pred))
 
     if generate_results:
-        conf_mat_file_path = os.path.join(results_path, model_str + "_TRIO_confusion.png")
+        conf_mat_file_path = os.path.join(results_path, model_str + "_TRIO_confusion" + "" if not REMOVE_BACKGROUND_TRIO else "_NoBackground" + ".png")
         save_confusion_matrix(confusion_matrix(y_test, y_pred), list(map(lambda x: str(x), range(10))),
-                              conf_mat_file_path, title="Confusion matrix of " + model_str + " with dataset TRIO")
+                              conf_mat_file_path, title="Confusion Matrix of " + model_str + " with Dataset TRIO" + "" if not REMOVE_BACKGROUND_TRIO else " With Background Removed")
     if show_graphs:
         plot_confusion_matrix(confusion_matrix(y_test, y_pred), list(map(lambda x: str(x), range(10))),
-                              title="Confusion matrix of " + model_str + " with dataset TRIO")
+                              title="Confusion matrix of " + model_str + " with dataset TRIO" + "" if not REMOVE_BACKGROUND_TRIO else " With Background Removed")
 
 
 def train_model(model_str: str, x_train, y_train, x_test, y_test, generate_results: bool = True, show_graphs: bool = False):
@@ -103,7 +102,8 @@ def train_model(model_str: str, x_train, y_train, x_test, y_test, generate_resul
 
     model: Model = get_model(model_str, (MNIST_PIXEL, 3 * MNIST_PIXEL, 1))
     model.summary()
-    model_path = os.path.join(models_path, model_str + "_TRIO.h5")
+    model_path = os.path.join(models_path, model_str + "_TRIO" + "" if not REMOVE_BACKGROUND_TRIO else "_NoBackground" + ".h5")
+
 
     best_accuracy = 0.
     for i in range(50):
@@ -134,10 +134,10 @@ def train_model(model_str: str, x_train, y_train, x_test, y_test, generate_resul
     if show_graphs:
         plot_training_history(history)
     if generate_results:
-        acc_img_path = os.path.join(results_path, model_str + "_TRIO_acc.png")
-        loss_img_path = os.path.join(results_path, model_str + "_TRIO_loss.png")
+        acc_img_path = os.path.join(results_path, model_str + "_TRIO" + "" if not REMOVE_BACKGROUND_TRIO else "_NoBackground" + "_acc.png")
+        loss_img_path = os.path.join(results_path, model_str + "_TRIO" + "" if not REMOVE_BACKGROUND_TRIO else "_NoBackground" + "_loss.png")
         save_training_history(history, acc_img_path, loss_img_path)
-        results_file_path = os.path.join(results_path, model_str + "_TRIO_results.json")
+        results_file_path = os.path.join(results_path, model_str + "_TRIO" + "" if not REMOVE_BACKGROUND_TRIO else "_NoBackground" + "_results.json")
         dictionary_to_json(results_file_path, history)
 
     load_model(model_path, model)
@@ -145,13 +145,13 @@ def train_model(model_str: str, x_train, y_train, x_test, y_test, generate_resul
     return model
 
 
-def evaluate_all_trio_MNIST_model(threshold: bool = True):
+def evaluate_all_trio_MNIST_model():
     """
     Evaluates all trio models
     :param threshold: if true, removes background from images by thresholding
     """
     for model_str in MNIST_model_names:
-        evaluate_trio_MNIST_model(model_str, threshold=threshold)
+        evaluate_trio_MNIST_model(model_str)
 
 
 if __name__ == '__main__':
