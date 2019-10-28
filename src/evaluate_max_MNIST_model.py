@@ -46,13 +46,6 @@ def evaluate_max_mnist_model(model_str: str, dataset: str, generate_results: boo
     if show_graphs:
         plot_confusion_matrix(confusion_matrix(y_test, y_pred), list(map(lambda x: str(x), range(10))),
                               title="MAX MNIST Confusion matrix with inner model " + model_str + " trained on dataset " + dataset)
-    if report_mispreditions:
-        df = pd.DataFrame()
-        df["actual"] = y_test
-        df["predicted"] = y_pred
-        incorrect = df[df["actual"] != df["predicted"]]
-        print(incorrect)
-        # TODO: figure out what to do with the incorrect values
 
     acc = accuracy_score(y_test, y_pred)
     print("\nValidation accuracy:", acc)
