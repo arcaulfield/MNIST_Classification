@@ -39,7 +39,7 @@ def evaluate_trio_MNIST_model(model_str: str, generate_results: bool = True, sho
     y_test = Y[split:]
 
     del X
-    del X
+    del Y
 
     # If the models need to be trained, do so
     if not retrain_models:
