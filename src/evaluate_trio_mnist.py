@@ -11,14 +11,16 @@ from src.config import NUM_CATEGORIES, NUMBERS_PER_PICTURE, MNIST_PIXEL, retrain
 from src.util.fileio import load_model, load_pkl_file, load_training_labels, save_model_weights, plot_training_history, save_training_history, plot_confusion_matrix, save_confusion_matrix, dictionary_to_json
 
 
-def evaluate_trio_MNIST_model(model_str: str, generate_results: bool = True, show_graphs: bool = False):
+def evaluate_trio_MNIST_model(model_str: str, generate_results: bool = True, show_graphs: bool = False, threshold: bool = True):
     """
     Evaluate a model predicting on all three extracted numbers at once
     :param model_str: Name of model to use
     :param generate_results: Generate results such as confusion matrix if True
     :param show_graphs: If true show the graphs
+    :param threshold: If true, remove background from images
     """
     print("\nEvaluating model " + model_str + " on the TRIO dataset")
+    print("\nRemove background: " + str(threshold))
 
     # Get the file paths of the training data
     training_images_file_path = os.path.join(data_path, training_images_file)
@@ -34,7 +36,7 @@ def evaluate_trio_MNIST_model(model_str: str, generate_results: bool = True, sho
     # Extract the numbers from each image
     for i in range(X.shape[0]):
         Y_trio[i * 6:i * 6 + 6] = Y[i]
-        x_extracted = extract_3_and_paste(X[i])
+        x_extracted = extract_3_and_paste(X[i], threshold=threshold)
         for j in range(6):
             X_trio[i * 6 + j] = x_extracted[j]
 
@@ -143,9 +145,13 @@ def train_model(model_str: str, x_train, y_train, x_test, y_test, generate_resul
     return model
 
 
-def evaluate_all_trio_MNIST_model():
+def evaluate_all_trio_MNIST_model(threshold: bool = True):
+    """
+    Evaluates all trio models
+    :param threshold: if true, removes background from images by thresholding
+    """
     for model_str in MNIST_model_names:
-        evaluate_trio_MNIST_model(model_str)
+        evaluate_trio_MNIST_model(model_str, threshold=threshold)
 
 
 if __name__ == '__main__':
