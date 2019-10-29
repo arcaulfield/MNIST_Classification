@@ -1,10 +1,8 @@
 import os
-import pandas as pd
 from sklearn.metrics import confusion_matrix, accuracy_score
 
 from src.models.mnist_predictor import get_model
-from src.config import models_path, results_path, MNIST_model_names, MNIST_datasets, training_images_file, \
-    training_labels_file_name, data_path, report_mispreditions
+from src.config import models_path, results_path, MNIST_model_names, MNIST_datasets, training_images_file, training_labels_file_name, data_path
 from src.util.fileio import load_model, plot_confusion_matrix, save_confusion_matrix, dictionary_to_json
 from src.evaluate_MNIST_models import train_model
 from src.models.max_mnist_predictor import MaxMNISTPredictor

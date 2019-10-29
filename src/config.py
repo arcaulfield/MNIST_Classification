@@ -16,8 +16,6 @@ MNIST_model_names = ["CNN"]
 MNIST_datasets = ["PROC_MNIST"]
 # If true, the models are retrained from scratch and the best models are saved to file
 retrain_models = False
-# If true, will keep track of all mispredicted images and show those extracted images and their prediction.
-report_mispreditions = True
 
 # Kaggle submission configuration
 kaggle_model = "CNN"
