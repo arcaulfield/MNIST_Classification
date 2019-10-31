@@ -13,9 +13,14 @@ testing_images_file = "test_max_x"
 MNIST_PIXEL = 28
 NUMBERS_PER_PICTURE = 3
 NUM_CATEGORIES = 10
+MOD_MNIST_PIXEL = 128
 
 # Model used to perform predictions (CNN or ResNet)
 MODEL = "CNN"
+# Define the number of epochs to do
+EPOCH = 50
+# If true, the models are retrained from scratch and the best models are saved to file
+retrain_models = False
 
 # Options for Isolated predictions
 ISOLATED_PRED_DATASET = "PROC_MNIST"
@@ -28,8 +33,6 @@ REMOVE_BACKGROUND_TRIO = False
 MNIST_model_names = ["CNN"]
 # MNIST datasets to run against the above models (options: MNITS, PROC_MNIST)
 MNIST_datasets = ["PROC_MNIST"]
-# If true, the models are retrained from scratch and the best models are saved to file
-retrain_models = True
 
 # Kaggle submission configuration
 kaggle_model = "CNN"

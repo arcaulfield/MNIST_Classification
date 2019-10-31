@@ -6,7 +6,7 @@ from keras.callbacks import ModelCheckpoint
 
 from src.data_processing.data_loader import transform_to_trio_MNIST, prepare_for_model_training
 from src.models.models import get_model
-from src.config import models_path, results_path, NUM_CATEGORIES, MNIST_PIXEL, retrain_models, MODEL, NUMBERS_PER_PICTURE, REMOVE_BACKGROUND_TRIO
+from src.config import models_path, results_path, NUM_CATEGORIES, MNIST_PIXEL, retrain_models, MODEL, NUMBERS_PER_PICTURE, REMOVE_BACKGROUND_TRIO, EPOCH
 from src.util.fileio import load_model, save_confusion_matrix, load_modified_MNIST_training, save_kaggle_results, load_modified_MNIST_test, save_training_history
 
 
@@ -16,13 +16,13 @@ def run():
     model = get_model(MODEL, input_shape=(MNIST_PIXEL, NUMBERS_PER_PICTURE * MNIST_PIXEL, 1), num_categories=NUM_CATEGORIES)
 
     print("Loading modified MNIST train dataset")
-    x_test, y_test = load_modified_MNIST_training()
+    x_train, y_train = load_modified_MNIST_training()
 
     print("Transforming training set to Triplet set")
-    x_triplet, y_triplet = transform_to_trio_MNIST(x_test, y_test)
+    x_triplet, y_triplet = transform_to_trio_MNIST(x_train, y_train)
     x_triplet = prepare_for_model_training(x_triplet)
-    del x_test
-    del y_test
+    del x_train
+    del y_train
 
     split = 0.8
 
@@ -45,11 +45,11 @@ def run():
 
     # Save a confusion matrix
     conf_mat_file_path = os.path.join(results_path, "TRIPLET_" + MODEL + "_removeback" + str(REMOVE_BACKGROUND_TRIO) + "_confusion.png")
-    save_confusion_matrix(confusion_matrix(y_pred, y_true), list(map(lambda x: str(x), range(10))),
+    save_confusion_matrix(confusion_matrix(y_true, y_pred), list(map(lambda x: str(x), range(10))),
                           conf_mat_file_path,
                           title="Triplet predictions with model " + MODEL + ", removed background: " + str(REMOVE_BACKGROUND_TRIO))
 
-    print("Validation accuracy: ", accuracy_score(y_pred, y_true))
+    print("Validation accuracy: ", accuracy_score(y_true, y_pred))
 
     produce_kaggle_results(model)
 
@@ -77,7 +77,7 @@ def produce_kaggle_results(model: Model):
 
 def train(model: Model, x_triplet, y_triplet, split: float):
     """
-    Trains the model with the correct MNIST dataset and loads it with the best weights
+    Trains the model with the triplet MNIST dataset and loads it with the best weights
     :param model: Model to be trained
     :param x_triplet: X triplet dataset
     :param y_triplet: Y triplet dataset
@@ -95,7 +95,7 @@ def train(model: Model, x_triplet, y_triplet, split: float):
     y_test = y_triplet[split:]
 
     print("Training Triplet " + MODEL + " on with background removed as " + str(REMOVE_BACKGROUND_TRIO))
-    history = model.fit(x=x_train, y=to_categorical(y_train), batch_size=128, epochs=50, verbose=2, callbacks=[mc], validation_data=(x_test, to_categorical(y_test)))
+    history = model.fit(x=x_train, y=to_categorical(y_train), batch_size=128, epochs=EPOCH, verbose=2, callbacks=[mc], validation_data=(x_test, to_categorical(y_test)))
 
     # Save the training history
     save_training_history(history.history, os.path.join(results_path, "TRIPLET_" + MODEL + "_removeback" + str(REMOVE_BACKGROUND_TRIO) + "acc.png"), os.path.join(results_path, "TRIPLET_" + MODEL + "_removeback" + str(REMOVE_BACKGROUND_TRIO) + "loss.png"))
