@@ -6,7 +6,7 @@ from keras.callbacks import ModelCheckpoint
 
 from src.data_processing.data_loader import transform_to_trio_MNIST, prepare_for_model_training
 from src.models.models import get_model
-from src.config import models_path, results_path, NUM_CATEGORIES, MNIST_PIXEL, retrain_models, MODEL, NUMBERS_PER_PICTURE, REMOVE_BACKGROUND_TRIO, EPOCH, transfter_learning
+from src.config import models_path, results_path, NUM_CATEGORIES, MNIST_PIXEL, retrain_models, MODEL, NUMBERS_PER_PICTURE, REMOVE_BACKGROUND_TRIO, EPOCH, transfer_learning
 from src.util.fileio import load_model, save_confusion_matrix, load_modified_MNIST_training, save_kaggle_results, load_modified_MNIST_test, save_training_history
 
 
@@ -36,7 +36,7 @@ def run():
             print("\tThe model file cannot be found at " + model_path + " so it will be retrained.")
             train(model, x_triplet, y_triplet, split)
     else:
-        if transfter_learning:
+        if transfer_learning:
             try:
                 load_model(model_path, model)
                 print("Transfer learning enabled, loaded old weights")

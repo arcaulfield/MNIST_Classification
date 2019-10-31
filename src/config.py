@@ -21,13 +21,13 @@ MOD_MNIST_PIXEL = 128
 ############ Options specific to all methods ###################
 
 # Model used to perform predictions (CNN or ResNet)
-MODEL = "CNN"
+MODEL = "ResNet"
 # Define the number of epochs to do
 EPOCH = 50
 # If true, the models are retrained from scratch and the best models are saved to file
 retrain_models = True
 # Enabling transfer learning will load an existing model if it already exists and continue the training from there
-transfter_learning = False
+transfer_learning = False
 
 
 ############## Options for specific methods ######################

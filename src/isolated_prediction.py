@@ -7,7 +7,7 @@ from keras.callbacks import ModelCheckpoint
 from src.data_processing.data_loader import get_MNIST
 from src.models.models import get_model
 from src.models.max_mnist_predictor import MaxMNISTPredictor
-from src.config import models_path, results_path, NUM_CATEGORIES, MNIST_PIXEL, retrain_models, MODEL, ISOLATED_PRED_DATASET, EPOCH, transfter_learning
+from src.config import models_path, results_path, NUM_CATEGORIES, MNIST_PIXEL, retrain_models, MODEL, ISOLATED_PRED_DATASET, EPOCH, transfer_learning
 from src.util.fileio import load_model, save_confusion_matrix, load_modified_MNIST_training, load_modified_MNIST_test, save_kaggle_results, save_training_history
 
 
@@ -25,7 +25,7 @@ def run():
             print("\tThe model file cannot be found at " + model_path + " so it will be retrained.")
             train(model)
     else:
-        if transfter_learning:
+        if transfer_learning:
             try:
                 load_model(model_path, model)
                 print("Transfer learning enabled, loaded old weights")

@@ -8,7 +8,7 @@ from keras.preprocessing.image import ImageDataGenerator
 
 from src.data_processing.data_loader import prepare_for_model_training
 from src.models.models import get_model
-from src.config import models_path, results_path, NUM_CATEGORIES, retrain_models, MODEL, MOD_MNIST_PIXEL, EPOCH, transfter_learning
+from src.config import models_path, results_path, NUM_CATEGORIES, retrain_models, MODEL, MOD_MNIST_PIXEL, EPOCH, transfer_learning
 from src.util.fileio import load_model, save_confusion_matrix, load_modified_MNIST_training, save_kaggle_results, load_modified_MNIST_test, save_training_history
 
 
@@ -33,7 +33,7 @@ def run():
             print("\tThe model file cannot be found at " + model_path + " so it will be retrained.")
             train(model, x_train, x_test, y_train, y_test)
     else:
-        if transfter_learning:
+        if transfer_learning:
             try:
                 load_model(model_path, model)
                 print("Transfer learning enabled, loaded old weights")
