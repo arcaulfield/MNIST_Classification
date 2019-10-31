@@ -5,7 +5,7 @@ from keras.utils import to_categorical
 from keras.models import Model
 
 from src.models.models import get_model
-from src.data_processing.MNIST import prepare_for_model_training, transform_to_trio_MNIST
+from src.data_processing.data_loader import prepare_for_model_training, transform_to_trio_MNIST
 from src.config import REMOVE_BACKGROUND_TRIO, NUM_CATEGORIES, MNIST_PIXEL, retrain_models, data_path, models_path, MNIST_model_names, results_path, training_images_file, training_labels_file_name
 from src.util.fileio import load_model, load_pkl_file, load_training_labels, save_model_weights, plot_training_history, save_training_history, plot_confusion_matrix, save_confusion_matrix, dictionary_to_json
 

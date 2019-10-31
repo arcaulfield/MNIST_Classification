@@ -7,7 +7,7 @@ from src.util.fileio import save_kaggle_results, load_pkl_file, load_model
 from src.config import results_path, kaggle_dataset, kaggle_model, data_path, testing_images_file, models_path, \
     retrain_models, MNIST_PIXEL, REMOVE_BACKGROUND_TRIO
 from src.models.models import get_model
-from src.data_processing.MNIST import transform_to_trio_MNIST, prepare_for_model_training
+from src.data_processing.data_loader import transform_to_trio_MNIST, prepare_for_model_training
 
 
 def generate_kaggle_results():

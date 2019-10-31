@@ -4,7 +4,7 @@ import numpy as np
 from keras.models import Model
 from sklearn.metrics import confusion_matrix, accuracy_score
 
-from src.data_processing.MNIST import get_MNIST
+from src.data_processing.data_loader import get_MNIST
 from src.models.models import get_model
 from src.config import NUM_CATEGORIES, retrain_models, models_path, results_path, MNIST_model_names, MNIST_datasets
 from src.util.fileio import load_model, save_model_weights, plot_training_history, save_training_history, plot_confusion_matrix, save_confusion_matrix, dictionary_to_json

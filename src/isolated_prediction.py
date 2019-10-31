@@ -4,14 +4,15 @@ from sklearn.metrics import confusion_matrix, accuracy_score
 from keras.utils import to_categorical
 from keras.callbacks import ModelCheckpoint
 
-from src.data_processing.MNIST import get_MNIST
+from src.data_processing.data_loader import get_MNIST
 from src.models.models import get_model
 from src.models.max_mnist_predictor import MaxMNISTPredictor
 from src.config import models_path, results_path, NUM_CATEGORIES, MNIST_PIXEL, retrain_models, MODEL, ISOLATED_PRED_DATASET
-from src.util.fileio import load_model, save_confusion_matrix, load_modified_MNIST_training, load_modified_MNIST_test, save_kaggle_results
+from src.util.fileio import load_model, save_confusion_matrix, load_modified_MNIST_training, load_modified_MNIST_test, save_kaggle_results, save_training_history
 
 
 def run():
+    print("Evaluating Independent predictions with model " + MODEL + " with dataset " + ISOLATED_PRED_DATASET)
     # Instantiate the appropriate model
     model = get_model(MODEL, input_shape=(MNIST_PIXEL, MNIST_PIXEL, 1), num_categories=NUM_CATEGORIES)
     if not retrain_models:
@@ -74,7 +75,10 @@ def train(model: Model):
     (x_train, y_train), (x_test, y_test) = get_MNIST(ISOLATED_PRED_DATASET)
 
     print("Training " + MODEL + " on " + ISOLATED_PRED_DATASET + " dataset")
-    model.fit(x=x_train, y=to_categorical(y_train), batch_size=128, epochs=50, verbose=2, callbacks=[mc], validation_data=(x_test, to_categorical(y_test)))
+    history = model.fit(x=x_train, y=to_categorical(y_train), batch_size=128, epochs=50, verbose=2, callbacks=[mc], validation_data=(x_test, to_categorical(y_test)))
+
+    # Save the training history
+    save_training_history(history.history, os.path.join(results_path, "ISOLATED_" + MODEL + "_" + ISOLATED_PRED_DATASET + "acc.png"), os.path.join(results_path, "ISOLATED_" + MODEL + "_" + ISOLATED_PRED_DATASET + "loss.png"))
 
     # Load the model with the best weights
     load_model(model_path, model)
