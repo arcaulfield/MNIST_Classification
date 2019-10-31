@@ -10,34 +10,30 @@ training_labels_file_name = "train_max_y.csv"
 training_images_file = "train_max_x"
 testing_images_file = "test_max_x"
 
+################### General constants #################
+
 MNIST_PIXEL = 28
 NUMBERS_PER_PICTURE = 3
 NUM_CATEGORIES = 10
 MOD_MNIST_PIXEL = 128
+
+
+############ Options specific to all methods ###################
 
 # Model used to perform predictions (CNN or ResNet)
 MODEL = "CNN"
 # Define the number of epochs to do
 EPOCH = 50
 # If true, the models are retrained from scratch and the best models are saved to file
-retrain_models = False
+retrain_models = True
+# Enabling transfer learning will load an existing model if it already exists and continue the training from there
+transfter_learning = False
 
-# Options for Isolated predictions
+
+############## Options for specific methods ######################
+
+# Options for Isolated predictions (options: MNITS, PROC_MNIST)
 ISOLATED_PRED_DATASET = "PROC_MNIST"
 
 # Options for triplet predictions
 REMOVE_BACKGROUND_TRIO = False
-
-
-# MNIST predictor model names to evaluate (options: CNN)
-MNIST_model_names = ["CNN"]
-# MNIST datasets to run against the above models (options: MNITS, PROC_MNIST)
-MNIST_datasets = ["PROC_MNIST"]
-
-# Kaggle submission configuration
-kaggle_model = "CNN"
-kaggle_dataset = "TRIO"
-
-
-
-

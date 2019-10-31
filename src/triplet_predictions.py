@@ -6,7 +6,7 @@ from keras.callbacks import ModelCheckpoint
 
 from src.data_processing.data_loader import transform_to_trio_MNIST, prepare_for_model_training
 from src.models.models import get_model
-from src.config import models_path, results_path, NUM_CATEGORIES, MNIST_PIXEL, retrain_models, MODEL, NUMBERS_PER_PICTURE, REMOVE_BACKGROUND_TRIO, EPOCH
+from src.config import models_path, results_path, NUM_CATEGORIES, MNIST_PIXEL, retrain_models, MODEL, NUMBERS_PER_PICTURE, REMOVE_BACKGROUND_TRIO, EPOCH, transfter_learning
 from src.util.fileio import load_model, save_confusion_matrix, load_modified_MNIST_training, save_kaggle_results, load_modified_MNIST_test, save_training_history
 
 
@@ -14,6 +14,7 @@ def run():
     print("Evaluating Triplet predictions with model " + MODEL + " and with background removal", REMOVE_BACKGROUND_TRIO)
     # Instantiate the appropriate model
     model = get_model(MODEL, input_shape=(MNIST_PIXEL, NUMBERS_PER_PICTURE * MNIST_PIXEL, 1), num_categories=NUM_CATEGORIES)
+    model_path = os.path.join(models_path, "TRIPLET_" + MODEL + "_removeback" + str(REMOVE_BACKGROUND_TRIO) + ".h5")
 
     print("Loading modified MNIST train dataset")
     x_train, y_train = load_modified_MNIST_training()
@@ -29,13 +30,18 @@ def run():
     if not retrain_models:
         try:
             # Try to load the weights if we do not want to retrain
-            model_path = os.path.join(models_path, "TRIPLET_" + MODEL + "_removeback" + str(REMOVE_BACKGROUND_TRIO) + ".h5")
             load_model(model_path, model)
             model.summary()
         except:
             print("\tThe model file cannot be found at " + model_path + " so it will be retrained.")
             train(model, x_triplet, y_triplet, split)
     else:
+        if transfter_learning:
+            try:
+                load_model(model_path, model)
+                print("Transfer learning enabled, loaded old weights")
+            except:
+                print("Transfer learning enabled but no old weights exist")
         train(model, x_triplet, y_triplet, split)
 
     print("Predicting training data...")
