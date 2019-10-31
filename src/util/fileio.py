@@ -6,6 +6,32 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from keras.models import Model
 
+from src.config import data_path, training_images_file, training_labels_file_name, testing_images_file
+
+
+def load_modified_MNIST_training():
+    """
+    Load the modified MNIST training data
+    :return: X_train, Y_train
+    """
+    training_images_file_path = os.path.join(data_path, training_images_file)
+    training_labels_file_path = os.path.join(data_path, training_labels_file_name)
+
+    x_train = load_pkl_file(training_images_file_path)
+    y_train = load_training_labels(training_labels_file_path)
+
+    return x_train, y_train
+
+
+def load_modified_MNIST_test():
+    """
+    Load the test data for the modified MNIST dataset
+    :return: X_test
+    """
+    test_images_file_path = os.path.join(data_path, testing_images_file)
+    x_test = load_pkl_file(test_images_file_path)
+
+    return x_test
 
 def load_pkl_file(pkl_file_path: str):
     """
