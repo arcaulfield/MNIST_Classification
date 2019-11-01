@@ -7,7 +7,7 @@ from keras.callbacks import ModelCheckpoint
 from src.data_processing.data_loader import transform_to_trio_MNIST, prepare_for_model_training
 from src.models.models import get_model
 from src.config import models_path, results_path, NUM_CATEGORIES, MNIST_PIXEL, retrain_models, MODEL, NUMBERS_PER_PICTURE, REMOVE_BACKGROUND_TRIO, EPOCH, transfer_learning
-from src.util.fileio import load_model, save_confusion_matrix, load_modified_MNIST_training, save_kaggle_results, load_modified_MNIST_test, save_training_history
+from src.util.fileio import load_model, save_confusion_matrix, load_modified_MNIST_training, save_kaggle_results, load_modified_MNIST_test, save_training_history, dictionary_to_json
 
 
 def run():
@@ -105,6 +105,7 @@ def train(model: Model, x_triplet, y_triplet, split: float):
 
     # Save the training history
     save_training_history(history.history, os.path.join(results_path, "TRIPLET_" + MODEL + "_removeback" + str(REMOVE_BACKGROUND_TRIO) + "acc.png"), os.path.join(results_path, "TRIPLET_" + MODEL + "_removeback" + str(REMOVE_BACKGROUND_TRIO) + "loss.png"))
+    dictionary_to_json(os.path.join(results_path, "TRIPLET_" + MODEL + "_removeback" + str(REMOVE_BACKGROUND_TRIO) + "results.json"), history.history)
 
     # Load the model with the best weights
     load_model(model_path, model)

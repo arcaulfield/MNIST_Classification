@@ -309,6 +309,11 @@ def dictionary_to_json(json_file_path: str, dictionary: dict):
     if not os.path.join(os.path.dirname(json_file_path)):
         raise Exception("The directory " + os.path.dirname(json_file_path), " you are trying to save your JSON results to does not exist")
 
+    for k in dictionary.keys():
+        v = dictionary[k]
+        if type(v) is list:
+            dictionary[k] = list(map(lambda x: str(x), v))
+
     with open(json_file_path, 'w') as fp:
         json.dump(dictionary, fp, indent=4)
 

@@ -8,7 +8,7 @@ from src.data_processing.data_loader import get_MNIST
 from src.models.models import get_model
 from src.models.max_mnist_predictor import MaxMNISTPredictor
 from src.config import models_path, results_path, NUM_CATEGORIES, MNIST_PIXEL, retrain_models, MODEL, ISOLATED_PRED_DATASET, EPOCH, transfer_learning
-from src.util.fileio import load_model, save_confusion_matrix, load_modified_MNIST_training, load_modified_MNIST_test, save_kaggle_results, save_training_history
+from src.util.fileio import load_model, save_confusion_matrix, load_modified_MNIST_training, load_modified_MNIST_test, save_kaggle_results, save_training_history, dictionary_to_json
 
 
 def run():
@@ -85,6 +85,7 @@ def train(model: Model):
 
     # Save the training history
     save_training_history(history.history, os.path.join(results_path, "ISOLATED_" + MODEL + "_" + ISOLATED_PRED_DATASET + "acc.png"), os.path.join(results_path, "ISOLATED_" + MODEL + "_" + ISOLATED_PRED_DATASET + "loss.png"))
+    dictionary_to_json(os.path.join(results_path, "ISOLATED_" + MODEL + "_" + ISOLATED_PRED_DATASET + "results.json"), history.history)
 
     # Load the model with the best weights
     load_model(model_path, model)

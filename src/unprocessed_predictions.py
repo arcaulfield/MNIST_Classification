@@ -9,7 +9,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from src.data_processing.data_loader import prepare_for_model_training
 from src.models.models import get_model
 from src.config import models_path, results_path, NUM_CATEGORIES, retrain_models, MODEL, MOD_MNIST_PIXEL, EPOCH, transfer_learning
-from src.util.fileio import load_model, save_confusion_matrix, load_modified_MNIST_training, save_kaggle_results, load_modified_MNIST_test, save_training_history
+from src.util.fileio import load_model, save_confusion_matrix, load_modified_MNIST_training, save_kaggle_results, load_modified_MNIST_test, save_training_history, dictionary_to_json
 
 
 def run():
@@ -100,6 +100,7 @@ def train(model: Model, x_train, x_test, y_train, y_test):
 
     # Save the training history
     save_training_history(history.history, os.path.join(results_path, "UNPROCESSED_" + MODEL + "acc.png"), os.path.join(results_path, "UNPROCESSED_" + MODEL + "loss.png"))
+    dictionary_to_json(os.path.join(results_path, "UNPROCESSED_" + MODEL + "results.json"), history.history)
 
     # Load the model with the best weights
     load_model(model_path, model)
