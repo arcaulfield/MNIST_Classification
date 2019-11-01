@@ -20,7 +20,8 @@ MOD_MNIST_PIXEL = 128
 
 ############ Options specific to all methods ###################
 
-# Model used to perform predictions (CNN or ResNet)
+# Model used to perform predictions (CNN or ResNet).
+# The ResNet is only compatible with the fully unprocessed data.
 MODEL = "CNN"
 # Define the number of epochs to do
 EPOCH = 50

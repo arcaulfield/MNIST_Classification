@@ -12,6 +12,9 @@ from src.util.fileio import load_model, save_confusion_matrix, load_modified_MNI
 
 
 def run():
+    if MODEL == "ResNet":
+        raise Exception("The triplet predictions can only be done using the CNN, please change the MODEL parameter in the config file")
+
     print("Evaluating Independent predictions with model " + MODEL + " with dataset " + ISOLATED_PRED_DATASET)
     # Instantiate the appropriate model
     model = get_model(MODEL, input_shape=(MNIST_PIXEL, MNIST_PIXEL, 1), num_categories=NUM_CATEGORIES)
