@@ -13,7 +13,7 @@ from src.util.fileio import load_model, save_confusion_matrix, load_modified_MNI
 
 
 def run():
-    print("Evaluating predictions with model " + MODEL + " on unprocessed dataset")
+    print("Evaluating predictions with model " + MODEL + " on unprocessed dataset. Fold number:" + FOLD_NUMBER)
     # Instantiate the appropriate model
     model = get_model(MODEL, input_shape=(MOD_MNIST_PIXEL, MOD_MNIST_PIXEL, 1),
                       num_categories=NUM_CATEGORIES)
@@ -105,7 +105,7 @@ def train(model: Model, x_train, x_test, y_train, y_test):
     y_test = to_categorical(y_test)
 
     # Define the data generator to perform data augmentation
-    datagen = ImageDataGenerator(rotation_range=25, zoom_range=0.1, width_shift_range=0.1, height_shift_range=0.1)
+    datagen = ImageDataGenerator(rotation_range=10, zoom_range=0.1, width_shift_range=0.1, height_shift_range=0.1)
     datagen.fit(x_train)
 
     print("Training unprocessed data with " + MODEL)
@@ -128,8 +128,8 @@ class ProduceTempPredictions(Callback):
 
     def on_epoch_end(self, epoch, logs={}):
         val_acc = logs['val_acc']
-        if val_acc > 0.984:
-            print("val_acc: " + str(val_acc) + " greater than threshold 0.983, producing kaggle results...")
+        if val_acc > 0.9845:
+            print("val_acc: " + str(val_acc) + " greater than threshold 0.9845, producing kaggle results...")
             temp_pred_folder = os.path.join(results_path, "temp_predictions")
             if not os.path.exists(temp_pred_folder):
                 os.makedirs(temp_pred_folder)
