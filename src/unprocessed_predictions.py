@@ -13,7 +13,7 @@ from src.util.fileio import load_model, save_confusion_matrix, load_modified_MNI
 
 
 def run():
-    print("Evaluating predictions with model " + MODEL + " on unprocessed dataset. Fold number:" + FOLD_NUMBER)
+    print("Evaluating predictions with model " + MODEL + " on unprocessed dataset. Fold number:" + str(FOLD_NUMBER))
     # Instantiate the appropriate model
     model = get_model(MODEL, input_shape=(MOD_MNIST_PIXEL, MOD_MNIST_PIXEL, 1),
                       num_categories=NUM_CATEGORIES)
