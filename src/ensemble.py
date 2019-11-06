@@ -3,7 +3,7 @@ import os
 import numpy as np
 from scipy.stats import mode
 from src.util.fileio import load_training_labels, save_kaggle_results
-from src.config import results_path
+from src.config import results_path, ensemble_folder
 
 
 def load_predictions():
@@ -12,7 +12,7 @@ def load_predictions():
     :return: nparray
     """
     predictions = list()
-    for file in glob.glob(os.path.join(results_path, "temp_predictions", "*.csv")):
+    for file in glob.glob(os.path.join(results_path, ensemble_folder, "*.csv")):
         predictions.append(load_training_labels(file))
     return np.vstack(tuple(predictions))
 
@@ -23,7 +23,7 @@ def get_majority_vote(predictions):
     :param predictions: a numpy matrix with all the predictions
     :return: a numpy array
     """
-    majority = mode(predictions)[0]
+    majority = mode(predictions)[0][0]
     return majority
 
 
