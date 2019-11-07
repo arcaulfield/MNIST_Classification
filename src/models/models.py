@@ -98,6 +98,7 @@ def get_ResNet_Model(input_shape, num_categories):
     net = Activation("relu")(net)
     net = Dropout(0.25)(net)
 
+    # This layer acts as a global average pooling layer
     net = AveragePooling2D(pool_size=(8, 8))(net)
     net = Flatten()(net)
     net = Dense(units=num_categories, activation="softmax")(net)
