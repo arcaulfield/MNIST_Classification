@@ -90,11 +90,15 @@ def get_ResNet_Model(input_shape, num_categories):
     net = Unit(net, 256)
     net = Unit(net, 256)
 
+    net = Unit(net, 512, pool=True)
+    net = Unit(net, 512)
+    net = Unit(net, 512)
+
     net = BatchNormalization()(net)
     net = Activation("relu")(net)
     net = Dropout(0.25)(net)
 
-    net = AveragePooling2D(pool_size=(16, 16))(net)
+    net = AveragePooling2D(pool_size=(8, 8))(net)
     net = Flatten()(net)
     net = Dense(units=num_categories, activation="softmax")(net)
 
